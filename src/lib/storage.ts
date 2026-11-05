@@ -32,6 +32,8 @@ const STORAGE_KEYS = {
   WEBHOOKS: 'zap_webhooks_v1',
   SUPABASE_CONFIG: 'zap_supabase_cfg_v1',
   WHATSAPP_LOGS: 'zap_whatsapp_logs_v1',
+  PIX_CONFIG: 'zap_pix_cfg_v1',
+  STRIPE_CONFIG: 'zap_stripe_cfg_v1',
 };
 
 export interface WhatsAppLog {
@@ -179,15 +181,16 @@ export const StorageService = {
     const txId = `ZAP${orderId}`;
     const cleanPhone = params.customerPhone.replace(/\D/g, '');
 
-    // Generate dynamic PIX payload
+    // Generate dynamic PIX payload using configured Pix key & real QR Code
+    const pixCfg = this.getPixConfig();
     const pixCode = generatePixCopiaECola(
-      'pagamentos@zapfunnel.com.br',
-      'ZAPFUNNEL PAGAMENTOS',
-      'SAO PAULO',
+      pixCfg.key || '03953418920',
+      pixCfg.beneficiary || 'ZAPFUNNEL PAGAMENTOS BR',
+      pixCfg.city || 'SAO PAULO',
       params.product.price,
-      txId
+      '***'
     );
-    const pixQrCodeSvg = generateQrCodeSvg(pixCode, 240);
+    const pixQrCodeSvg = generateQrCodeSvg(pixCode, 260);
 
     const host = window.location.origin;
     const checkoutLink = `${host}/?checkout_order=${orderId}&slug=${params.product.slug}`;
@@ -450,6 +453,28 @@ export const StorageService = {
   },
   saveSupabaseConfig(cfg: SupabaseConfig): void {
     setItem(STORAGE_KEYS.SUPABASE_CONFIG, cfg);
+  },
+
+  // Pix Payment Configuration
+  getPixConfig(): { key: string; beneficiary: string; city: string } {
+    return getItem(STORAGE_KEYS.PIX_CONFIG, {
+      key: '03953418920',
+      beneficiary: 'ZAPFUNNEL PAGAMENTOS BR',
+      city: 'SAO PAULO',
+    });
+  },
+  savePixConfig(cfg: { key: string; beneficiary: string; city: string }): void {
+    setItem(STORAGE_KEYS.PIX_CONFIG, cfg);
+  },
+
+  // Stripe Payment Configuration
+  getStripeConfig(): { publishableKey: string } {
+    return getItem(STORAGE_KEYS.STRIPE_CONFIG, {
+      publishableKey: 'pk_live_51Pxxxxxxxxxxxxxxxxxxxxxx',
+    });
+  },
+  saveStripeConfig(cfg: { publishableKey: string }): void {
+    setItem(STORAGE_KEYS.STRIPE_CONFIG, cfg);
   },
 
   // CSV Export for Leads, Orders, and Analytics

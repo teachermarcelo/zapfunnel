@@ -43,9 +43,11 @@ export const IntegrationsAndSupabase: React.FC<IntegrationsAndSupabaseProps> = (
   const [webhooks, setWebhooks] = useState<WebhookConfig[]>(StorageService.getWebhooks());
 
   // Payment gateways
-  const [stripeKey, setStripeKey] = useState('pk_live_51Pxxxxxxxxxxxxxxxxxxxxxx');
-  const [pixKey, setPixKey] = useState('pagamentos@zapfunnel.com.br');
-  const [pixBeneficiary, setPixBeneficiary] = useState('ZAPFUNNEL PAGAMENTOS BR');
+  const initialPixCfg = StorageService.getPixConfig();
+  const initialStripeCfg = StorageService.getStripeConfig();
+  const [stripeKey, setStripeKey] = useState(initialStripeCfg.publishableKey);
+  const [pixKey, setPixKey] = useState(initialPixCfg.key);
+  const [pixBeneficiary, setPixBeneficiary] = useState(initialPixCfg.beneficiary);
 
   const handleCopySql = () => {
     navigator.clipboard.writeText(SUPABASE_SQL_MIGRATION);
@@ -55,6 +57,19 @@ export const IntegrationsAndSupabase: React.FC<IntegrationsAndSupabaseProps> = (
       setCopiedSql(false);
       setToastMessage(null);
     }, 3500);
+  };
+
+  const handleSavePaymentConfigs = () => {
+    StorageService.savePixConfig({
+      key: pixKey.trim(),
+      beneficiary: pixBeneficiary.trim(),
+      city: 'SAO PAULO',
+    });
+    StorageService.saveStripeConfig({
+      publishableKey: stripeKey.trim(),
+    });
+    setToastMessage('Chave Pix e dados de pagamento salvos com sucesso!');
+    setTimeout(() => setToastMessage(null), 3000);
   };
 
   const handleSaveAndTestSupabase = async () => {
@@ -362,6 +377,17 @@ export const IntegrationsAndSupabase: React.FC<IntegrationsAndSupabaseProps> = (
             <span>Emite recibos automáticos por e-mail e confirmação no WhatsApp após aprovação.</span>
           </div>
         </div>
+      </div>
+
+      {/* Save Pix & Payment Button */}
+      <div className="flex justify-end">
+        <button
+          onClick={handleSavePaymentConfigs}
+          className="px-6 py-2.5 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-slate-950 font-extrabold text-xs shadow-lg shadow-emerald-500/20 transition-all cursor-pointer flex items-center space-x-2"
+        >
+          <Zap className="w-4 h-4" />
+          <span>Salvar Chave Pix & Configurações de Pagamento</span>
+        </button>
       </div>
 
       {/* External CRM Webhooks */}

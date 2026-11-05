@@ -428,12 +428,33 @@ export const ProprietaryCheckoutModal: React.FC<ProprietaryCheckoutModalProps> =
                   </div>
 
                   {/* Render True SVG QR Code */}
-                  <div className="bg-white p-3 rounded-2xl w-56 h-56 mx-auto shadow-2xl flex items-center justify-center">
-                    <div
-                      dangerouslySetInnerHTML={{
-                        __html: currentOrder.pixQrCodeSvg || '',
-                      }}
-                    />
+                  <div className="bg-white p-3 rounded-2xl w-64 h-64 mx-auto shadow-2xl flex items-center justify-center overflow-hidden">
+                    {currentOrder.pixQrCodeSvg ? (
+                      <div
+                        className="w-full h-full flex items-center justify-center [&>svg]:w-full [&>svg]:h-full [&>svg]:p-0"
+                        dangerouslySetInnerHTML={{
+                          __html: currentOrder.pixQrCodeSvg,
+                        }}
+                      />
+                    ) : (
+                      <div className="text-xs text-slate-500 font-medium">Carregando QR Code...</div>
+                    )}
+                  </div>
+
+                  {/* Pix Receiver Details */}
+                  <div className="bg-slate-950/90 border border-slate-800/90 rounded-xl p-3 text-xs text-left space-y-1">
+                    <div className="flex items-center justify-between">
+                      <span className="text-slate-400">Recebedor:</span>
+                      <span className="font-bold text-white font-mono">{StorageService.getPixConfig().beneficiary}</span>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-slate-400">Chave Pix:</span>
+                      <span className="font-bold text-emerald-400 font-mono">{StorageService.getPixConfig().key}</span>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-slate-400">Valor a Pagar:</span>
+                      <span className="font-black text-emerald-400 text-sm">R$ {product.price.toFixed(2).replace('.', ',')}</span>
+                    </div>
                   </div>
 
                   <p className="text-xs text-slate-400">
