@@ -10,7 +10,8 @@ import {
   MessageSquare, 
   ExternalLink,
   PlusCircle,
-  Smartphone
+  Smartphone,
+  Cloud
 } from 'lucide-react';
 import { Product } from '../types';
 
@@ -21,6 +22,7 @@ interface NavbarProps {
   onOpenNewPageModal: () => void;
   onOpenWhatsAppModal: () => void;
   onOpenPagesDrawer: () => void;
+  onOpenSyncModal: () => void;
   onSelectPublicPage: (slug: string) => void;
   unreadWhatsAppCount: number;
 }
@@ -32,6 +34,7 @@ export const Navbar: React.FC<NavbarProps> = ({
   onOpenNewPageModal,
   onOpenWhatsAppModal,
   onOpenPagesDrawer,
+  onOpenSyncModal,
   onSelectPublicPage,
   unreadWhatsAppCount,
 }) => {
@@ -134,6 +137,16 @@ export const Navbar: React.FC<NavbarProps> = ({
 
           {/* Right Actions */}
           <div className="flex items-center space-x-2">
+            {/* Cloud & Supabase Sync Button */}
+            <button
+              onClick={onOpenSyncModal}
+              className="px-2.5 py-1.5 rounded-lg bg-indigo-500/10 text-indigo-300 border border-indigo-500/30 hover:bg-indigo-500/20 transition-all flex items-center space-x-1.5 text-xs font-semibold cursor-pointer shadow-sm"
+              title="Sincronizar dados entre Vercel, Supabase e este computador"
+            >
+              <Cloud className="w-4 h-4 text-indigo-400" />
+              <span className="hidden sm:inline">Nuvem / Sync</span>
+            </button>
+
             {/* WhatsApp Simulator Button */}
             <button
               onClick={onOpenWhatsAppModal}

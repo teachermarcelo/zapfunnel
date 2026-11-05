@@ -10,9 +10,11 @@ import { IntegrationsAndSupabase } from './components/admin/IntegrationsAndSupab
 import { WhatsAppInboxModal } from './components/admin/WhatsAppInboxModal';
 import { CreateNewPageModal } from './components/admin/CreateNewPageModal';
 import { PagesManagementDrawer } from './components/admin/PagesManagementDrawer';
+import { DataSyncModal } from './components/admin/DataSyncModal';
 import { ProprietaryCheckoutModal } from './components/checkout/ProprietaryCheckoutModal';
 import { LandingPageView } from './components/public/LandingPageView';
 import { StorageService, WhatsAppLog } from './lib/storage';
+import { SupabaseSyncService } from './lib/supabaseSync';
 import { Product, LandingPageConfig, Order, Lead, AbandonedCart, ClickAnalytic, RecoveryRule } from './types';
 
 export default function App() {
@@ -38,6 +40,7 @@ export default function App() {
   const [isWhatsAppModalOpen, setIsWhatsAppModalOpen] = useState(false);
   const [isNewProductModalOpen, setIsNewProductModalOpen] = useState(false);
   const [isPagesDrawerOpen, setIsPagesDrawerOpen] = useState(false);
+  const [isSyncModalOpen, setIsSyncModalOpen] = useState(false);
 
   const loadData = () => {
     setProducts(StorageService.getProducts());
@@ -52,6 +55,13 @@ export default function App() {
 
   useEffect(() => {
     loadData();
+
+    // Background pull from Supabase if connected
+    SupabaseSyncService.pullFromSupabase().then((res) => {
+      if (res.success && res.count > 0) {
+        loadData();
+      }
+    });
 
     // Check URL parameters for direct public page or checkout link
     const searchParams = new URLSearchParams(window.location.search);
@@ -155,6 +165,7 @@ export default function App() {
         onOpenNewPageModal={() => setIsNewProductModalOpen(true)}
         onOpenWhatsAppModal={() => setIsWhatsAppModalOpen(true)}
         onOpenPagesDrawer={() => setIsPagesDrawerOpen(true)}
+        onOpenSyncModal={() => setIsSyncModalOpen(true)}
         onSelectPublicPage={handleSelectPublicPage}
         unreadWhatsAppCount={whatsAppLogs.length}
       />
@@ -267,6 +278,13 @@ export default function App() {
         isOpen={isWhatsAppModalOpen}
         onClose={() => setIsWhatsAppModalOpen(false)}
         logs={whatsAppLogs}
+      />
+
+      {/* Global Data Sync & Backup Modal */}
+      <DataSyncModal
+        isOpen={isSyncModalOpen}
+        onClose={() => setIsSyncModalOpen(false)}
+        onDataChanged={loadData}
       />
     </div>
   );

@@ -11,6 +11,7 @@ import {
 } from 'lucide-react';
 import { Product, LandingPageConfig } from '../../types';
 import { StorageService } from '../../lib/storage';
+import { SupabaseSyncService } from '../../lib/supabaseSync';
 
 interface CreateNewPageModalProps {
   isOpen: boolean;
@@ -207,6 +208,7 @@ export const CreateNewPageModal: React.FC<CreateNewPageModalProps> = ({
 
     StorageService.saveProduct(newProduct);
     StorageService.saveLandingPage(newLandingPage);
+    SupabaseSyncService.syncSingleProduct(newProduct, newLandingPage);
 
     onPageCreated(newProduct, newLandingPage);
     onClose();
