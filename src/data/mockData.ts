@@ -65,6 +65,22 @@ export const INITIAL_PRODUCTS: Product[] = [
     salesCount: 89,
     revenue: 13083.0,
   },
+  {
+    id: 'prod_5',
+    name: 'Método Inglês para Nações - Fluência Prática',
+    slug: 'ingles-para-nacoes',
+    price: 97.0,
+    originalPrice: 297.0,
+    category: 'Cursos & Idiomas',
+    description: 'Destrave seu inglês para conversação real, viagens e negócios internacionais com método validado e suporte VIP no WhatsApp.',
+    imageUrl: 'https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?auto=format&fit=crop&w=800&q=80',
+    badge: 'Lançamento Exclusivo',
+    status: 'active',
+    deliveryUrl: 'https://membros.inglesparanacoes.com.br/acesso',
+    createdAt: '2026-11-05T09:00:00Z',
+    salesCount: 1,
+    revenue: 97.0,
+  },
 ];
 
 export const INITIAL_LANDING_PAGES: LandingPageConfig[] = [
@@ -391,6 +407,81 @@ export const INITIAL_LANDING_PAGES: LandingPageConfig[] = [
     active: true,
     updatedAt: '2026-11-04T09:00:00Z',
   },
+  {
+    id: 'lp_5',
+    productId: 'prod_5',
+    slug: 'ingles-para-nacoes',
+    title: 'Método Inglês para Nações - Destrave Sua Fluência',
+    theme: 'emerald',
+    deliveryUrl: 'https://membros.inglesparanacoes.com.br/acesso',
+    hero: {
+      badge: '🌍 Método Validado para Brasileiros',
+      headline: 'Destrave Sua Fala em Inglês em Tempo Recorde e Fale com Segurança em Qualquer Lugar',
+      subheadline: 'O protocolo conversacional prático que elimina o medo de travar e acelera sua fluência sem decorebas inúteis.',
+      ctaText: 'Quero Minha Vaga com Desconto & Suporte WhatsApp',
+      mediaType: 'image',
+      mediaUrl: 'https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?auto=format&fit=crop&w=800&q=80',
+      socialProofCount: '+3.150 alunos fluentes',
+    },
+    benefits: [
+      {
+        id: 'b1',
+        title: 'Conversação Prática desde o Primeiro Dia',
+        description: 'Técnicas de repetição espaçada e frases de alta frequência para você falar com confiança imediatamente.',
+      },
+      {
+        id: 'b2',
+        title: 'Avisos e Exercícios pelo WhatsApp',
+        description: 'Receba seus áudios, cronogramas de estudo e tira-dúvidas direto no seu WhatsApp todos os dias.',
+      },
+      {
+        id: 'b3',
+        title: 'Certificado e Acesso Vitalício',
+        description: 'Estude no seu próprio ritmo, sem mensalidades abusivas e com garantia total de aprendizado.',
+      },
+    ],
+    painPoints: [
+      'Cansado de anos em cursinhos tradicionais sem conseguir formular uma frase?',
+      'Sente vergonha ou trava na hora de falar com nativos ou em reuniões de trabalho?',
+      'Falta de tempo para rotinas pesadas de estudo de gramática tradicional?',
+    ],
+    featuresList: [
+      'Acesso Imediato à Plataforma de Aulas Práticas',
+      'Material Didático e Áudios para Download',
+      'Notificações de Aulas e Suporte VIP no WhatsApp',
+      'Garantia Incondicional de 7 Dias',
+    ],
+    testimonials: [
+      {
+        id: 't1',
+        name: 'Rafael Dantas',
+        role: 'Engenheiro de Software',
+        avatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=150&q=80',
+        comment: 'Passei na minha primeira entrevista de emprego em inglês para o exterior após 40 dias no método. Simplesmente revolucionário!',
+        rating: 5,
+        verified: true,
+      },
+    ],
+    faqs: [
+      {
+        id: 'f1',
+        question: 'Como recebo o acesso ao curso?',
+        answer: 'Imediatamente após a aprovação do Pix ou cartão, seu link de acesso é enviado diretamente para o seu WhatsApp e e-mail.',
+      },
+      {
+        id: 'f2',
+        question: 'Funciona para iniciantes do zero?',
+        answer: 'Sim, o método foi estruturado especialmente para quem nunca estudou ou para quem já tentou vários cursos e travou.',
+      },
+    ],
+    guaranteeDays: 7,
+    countdownMinutes: 15,
+    whatsappMessageCustom: 'Olá {nome}! Seu pedido do *Inglês para Nações* foi criado com sucesso! Link de pagamento: {link}',
+    whatsappRecovery1h: 'Oi {nome}! O seu desconto e bônus no *Inglês para Nações* ainda estão reservados por tempo limitado. Finalize aqui: {link}',
+    liveBuyersPopup: true,
+    active: true,
+    updatedAt: '2026-11-05T10:00:00Z',
+  },
 ];
 
 export const INITIAL_LEADS: Lead[] = [
@@ -446,6 +537,32 @@ export const INITIAL_LEADS: Lead[] = [
     state: 'PR',
     status: 'recovered',
   },
+  {
+    id: 'lead_5',
+    name: 'Carlos Eduardo Mendes',
+    phone: '(19) 98122-3344',
+    email: 'carlos.mendes@gmail.com',
+    productId: 'prod_5',
+    productTitle: 'Método Inglês para Nações - Fluência Prática',
+    createdAt: '2026-11-05T09:12:00Z',
+    source: 'Instagram Ads',
+    city: 'Campinas',
+    state: 'SP',
+    status: 'paid',
+  },
+  {
+    id: 'lead_6',
+    name: 'Juliana Pires',
+    phone: '(61) 99877-6655',
+    email: 'juliana.pires@gmail.com',
+    productId: 'prod_5',
+    productTitle: 'Método Inglês para Nações - Fluência Prática',
+    createdAt: '2026-11-05T09:40:00Z',
+    source: 'WhatsApp Direto',
+    city: 'Brasília',
+    state: 'DF',
+    status: 'initiated',
+  },
 ];
 
 export const INITIAL_ORDERS: Order[] = [
@@ -478,7 +595,8 @@ export const INITIAL_ORDERS: Order[] = [
     customerEmail: 'fernanda.costa@hotmail.com',
     amount: 97.0,
     paymentMethod: 'pix',
-    status: 'pending',
+    status: 'paid',
+    paidAt: '2026-11-05T07:15:00Z',
     pixCode: '00020126580014br.gov.bcb.pix0136zapfunnel@pagamentos.com.br520400005303986540597.005802BR5915ZAPFUNNEL PAGTO6009RIO JANEIRO62140510ORD1002PIX6304C9F1',
     createdAt: '2026-11-05T06:30:00Z',
     whatsappDispatched: true,
