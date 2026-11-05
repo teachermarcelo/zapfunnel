@@ -8,6 +8,8 @@ import { CartRecovery } from './components/admin/CartRecovery';
 import { AnalyticsView } from './components/admin/AnalyticsView';
 import { IntegrationsAndSupabase } from './components/admin/IntegrationsAndSupabase';
 import { WhatsAppInboxModal } from './components/admin/WhatsAppInboxModal';
+import { CreateNewPageModal } from './components/admin/CreateNewPageModal';
+import { PagesManagementDrawer } from './components/admin/PagesManagementDrawer';
 import { ProprietaryCheckoutModal } from './components/checkout/ProprietaryCheckoutModal';
 import { LandingPageView } from './components/public/LandingPageView';
 import { StorageService, WhatsAppLog } from './lib/storage';
@@ -29,12 +31,13 @@ export default function App() {
   const [recoveryRules, setRecoveryRules] = useState<RecoveryRule[]>([]);
   const [whatsAppLogs, setWhatsAppLogs] = useState<WhatsAppLog[]>([]);
 
-  // Modals
+  // Modals & Panels
   const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
   const [selectedCheckoutProduct, setSelectedCheckoutProduct] = useState<Product | null>(null);
   const [checkoutInitialOrderId, setCheckoutInitialOrderId] = useState<string | undefined>(undefined);
   const [isWhatsAppModalOpen, setIsWhatsAppModalOpen] = useState(false);
   const [isNewProductModalOpen, setIsNewProductModalOpen] = useState(false);
+  const [isPagesDrawerOpen, setIsPagesDrawerOpen] = useState(false);
 
   const loadData = () => {
     setProducts(StorageService.getProducts());
@@ -151,6 +154,7 @@ export default function App() {
         products={products}
         onOpenNewPageModal={() => setIsNewProductModalOpen(true)}
         onOpenWhatsAppModal={() => setIsWhatsAppModalOpen(true)}
+        onOpenPagesDrawer={() => setIsPagesDrawerOpen(true)}
         onSelectPublicPage={handleSelectPublicPage}
         unreadWhatsAppCount={whatsAppLogs.length}
       />
@@ -223,6 +227,29 @@ export default function App() {
           />
         )}
       </main>
+
+      {/* Global Create New Page Modal - Accessible from any tab! */}
+      <CreateNewPageModal
+        isOpen={isNewProductModalOpen}
+        onClose={() => setIsNewProductModalOpen(false)}
+        onPageCreated={(prod, lp) => {
+          loadData();
+          handleSelectPublicPage(lp.slug);
+        }}
+      />
+
+      {/* Global Pages Management Drawer (Edit, Remove, View, Checkout) */}
+      <PagesManagementDrawer
+        isOpen={isPagesDrawerOpen}
+        onClose={() => setIsPagesDrawerOpen(false)}
+        products={products}
+        landingPages={landingPages}
+        onSelectPublicPage={handleSelectPublicPage}
+        onEditPage={handleEditPage}
+        onOpenCheckoutModal={handleOpenCheckout}
+        onOpenNewPageModal={() => setIsNewProductModalOpen(true)}
+        onRefreshData={loadData}
+      />
 
       {/* Global Checkout Modal */}
       {isCheckoutOpen && selectedCheckoutProduct && (

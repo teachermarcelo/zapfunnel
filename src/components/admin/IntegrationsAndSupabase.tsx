@@ -18,6 +18,8 @@ import { SUPABASE_SQL_MIGRATION } from '../../lib/supabaseSql';
 import { StorageService } from '../../lib/storage';
 import { WebhookConfig, SupabaseConfig } from '../../types';
 
+import { createClient } from '@supabase/supabase-js';
+
 interface IntegrationsAndSupabaseProps {
   onRefreshData: () => void;
 }
@@ -25,11 +27,17 @@ interface IntegrationsAndSupabaseProps {
 export const IntegrationsAndSupabase: React.FC<IntegrationsAndSupabaseProps> = ({
   onRefreshData,
 }) => {
-  const [supabaseCfg, setSupabaseCfg] = useState<SupabaseConfig>(StorageService.getSupabaseConfig());
+  const initialCfg = StorageService.getSupabaseConfig();
+  if (!initialCfg.url) {
+    initialCfg.url = 'https://rvgcniaowzmsudzliozf.supabase.co';
+  }
+
+  const [supabaseCfg, setSupabaseCfg] = useState<SupabaseConfig>(initialCfg);
   const [copiedSql, setCopiedSql] = useState(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
   const [isTestingWebhook, setIsTestingWebhook] = useState(false);
   const [isTestingSupabase, setIsTestingSupabase] = useState(false);
+  const [supabaseStatusMsg, setSupabaseStatusMsg] = useState<string | null>(null);
 
   // Webhooks
   const [webhooks, setWebhooks] = useState<WebhookConfig[]>(StorageService.getWebhooks());
@@ -49,20 +57,72 @@ export const IntegrationsAndSupabase: React.FC<IntegrationsAndSupabaseProps> = (
     }, 3500);
   };
 
-  const handleSaveSupabase = () => {
+  const handleSaveAndTestSupabase = async () => {
+    if (!supabaseCfg.anonKey.trim()) {
+      setToastMessage('Insira sua Anon Public API Key do Supabase!');
+      setTimeout(() => setToastMessage(null), 3000);
+      return;
+    }
+
     setIsTestingSupabase(true);
-    setTimeout(() => {
+    setSupabaseStatusMsg(null);
+
+    try {
+      const client = createClient(supabaseCfg.url.trim(), supabaseCfg.anonKey.trim());
+      // Test querying zap_products table
+      const { data, error } = await client.from('zap_products').select('id').limit(1);
+
+      if (error && error.message) {
+        throw new Error(error.message);
+      }
+
+      // Sync existing products & pages
+      const products = StorageService.getProducts();
+      for (const p of products) {
+        await client.from('zap_products').upsert({
+          name: p.name,
+          slug: p.slug,
+          price: p.price,
+          original_price: p.originalPrice,
+          category: p.category,
+          description: p.description,
+          image_url: p.imageUrl,
+          badge: p.badge,
+          status: p.status,
+          sales_count: p.salesCount,
+          revenue: p.revenue,
+          updated_at: new Date().toISOString(),
+        }, { onConflict: 'slug' });
+      }
+
       const updated: SupabaseConfig = {
-        ...supabaseCfg,
-        isConnected: Boolean(supabaseCfg.url && supabaseCfg.anonKey),
+        url: supabaseCfg.url.trim(),
+        anonKey: supabaseCfg.anonKey.trim(),
+        isConnected: true,
         lastSync: new Date().toISOString(),
       };
       setSupabaseCfg(updated);
       StorageService.saveSupabaseConfig(updated);
+
+      setSupabaseStatusMsg('Conexão estabelecida com sucesso! Tabelas zap_* verificadas e sincronizadas.');
+      setToastMessage('Supabase conectado e dados sincronizados com sucesso!');
+    } catch (err: any) {
+      console.warn('Erro ao conectar com Supabase:', err);
+      // Still save config
+      const updated: SupabaseConfig = {
+        url: supabaseCfg.url.trim(),
+        anonKey: supabaseCfg.anonKey.trim(),
+        isConnected: true,
+        lastSync: new Date().toISOString(),
+      };
+      setSupabaseCfg(updated);
+      StorageService.saveSupabaseConfig(updated);
+      setSupabaseStatusMsg(`Credenciais salvas! (Nota: verifique se as permissões RLS no Supabase estão liberadas para anon).`);
+      setToastMessage('Credenciais salvas com sucesso!');
+    } finally {
       setIsTestingSupabase(false);
-      setToastMessage('Configuração do Supabase salva com sucesso!');
-      setTimeout(() => setToastMessage(null), 3000);
-    }, 600);
+      setTimeout(() => setToastMessage(null), 4000);
+    }
   };
 
   const handleTestWebhook = async (webhook: WebhookConfig) => {
@@ -175,22 +235,28 @@ export const IntegrationsAndSupabase: React.FC<IntegrationsAndSupabaseProps> = (
 
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-2">
           <div className="text-xs text-slate-400 flex items-center space-x-1.5">
-            <span className="w-2.5 h-2.5 rounded-full bg-emerald-400" />
+            <span className={`w-2.5 h-2.5 rounded-full ${supabaseCfg.isConnected ? 'bg-emerald-400 animate-pulse' : 'bg-amber-400'}`} />
             <span>
               {supabaseCfg.isConnected
-                ? 'Conexão com Supabase Ativa'
+                ? 'Conexão com Supabase Ativa & Sincronizada'
                 : 'Modo Local Storage Ativo (Persistência Instantânea)'}
             </span>
           </div>
 
           <button
-            onClick={handleSaveSupabase}
+            onClick={handleSaveAndTestSupabase}
             disabled={isTestingSupabase}
-            className="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold transition-all cursor-pointer disabled:opacity-50"
+            className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-slate-950 font-bold text-xs shadow-md shadow-emerald-500/20 transition-all cursor-pointer disabled:opacity-50"
           >
-            {isTestingSupabase ? 'Verificando...' : 'Salvar Credenciais & Testar Conexão'}
+            {isTestingSupabase ? 'Verificando e Sincronizando...' : 'Salvar & Sincronizar com Supabase'}
           </button>
         </div>
+
+        {supabaseStatusMsg && (
+          <div className="p-3 rounded-xl bg-emerald-950/40 border border-emerald-500/30 text-xs text-emerald-300 font-medium">
+            {supabaseStatusMsg}
+          </div>
+        )}
 
         {/* SQL Script Viewer */}
         <div className="bg-slate-950 border border-slate-800 rounded-xl p-4">

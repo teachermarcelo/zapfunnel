@@ -20,6 +20,7 @@ interface NavbarProps {
   products: Product[];
   onOpenNewPageModal: () => void;
   onOpenWhatsAppModal: () => void;
+  onOpenPagesDrawer: () => void;
   onSelectPublicPage: (slug: string) => void;
   unreadWhatsAppCount: number;
 }
@@ -30,6 +31,7 @@ export const Navbar: React.FC<NavbarProps> = ({
   products,
   onOpenNewPageModal,
   onOpenWhatsAppModal,
+  onOpenPagesDrawer,
   onSelectPublicPage,
   unreadWhatsAppCount,
 }) => {
@@ -147,30 +149,62 @@ export const Navbar: React.FC<NavbarProps> = ({
               )}
             </button>
 
-            {/* Quick Public Page Dropdown */}
+            {/* Quick Public Page & Management Panel */}
             <div className="relative group">
-              <button className="flex items-center space-x-1 px-2.5 py-1.5 rounded-lg bg-slate-800 text-slate-200 border border-slate-700 hover:bg-slate-700/80 text-xs font-medium transition-all">
+              <button
+                onClick={onOpenPagesDrawer}
+                className="flex items-center space-x-1.5 px-3 py-1.5 rounded-lg bg-slate-800 text-slate-200 border border-slate-700 hover:bg-slate-700/80 text-xs font-semibold transition-all cursor-pointer shadow-sm"
+                title="Abrir Painel de Páginas (Editar, Remover, Ver)"
+              >
+                <Layers className="w-3.5 h-3.5 text-emerald-400" />
                 <span>Ver Páginas</span>
-                <ExternalLink className="w-3.5 h-3.5 text-slate-400" />
+                <span className="text-[10px] bg-slate-900 px-1.5 py-0.2 rounded font-mono text-emerald-400">
+                  {products.length}
+                </span>
               </button>
 
-              <div className="absolute right-0 mt-2 w-64 bg-slate-900 border border-slate-800 rounded-xl shadow-2xl p-2 hidden group-hover:block transition-all z-50">
-                <div className="text-[11px] font-semibold text-slate-400 px-2 py-1 uppercase tracking-wider">
-                  Páginas de Vendas Ativas
+              <div className="absolute right-0 mt-2 w-72 bg-slate-900 border border-slate-800 rounded-2xl shadow-2xl p-2 hidden group-hover:block transition-all z-50">
+                <div className="flex items-center justify-between px-2 py-1.5 border-b border-slate-800/80 mb-1">
+                  <span className="text-[11px] font-bold text-slate-300 uppercase tracking-wider">
+                    Suas Subpáginas
+                  </span>
+                  <button
+                    onClick={onOpenPagesDrawer}
+                    className="text-[10px] font-bold text-emerald-400 hover:underline cursor-pointer"
+                  >
+                    Painel Completo &rarr;
+                  </button>
                 </div>
                 <div className="divide-y divide-slate-800/60 max-h-60 overflow-y-auto">
                   {products.map((p) => (
-                    <button
+                    <div
                       key={p.id}
-                      onClick={() => onSelectPublicPage(p.slug)}
-                      className="w-full text-left px-2.5 py-2 rounded-lg hover:bg-slate-800 text-xs text-slate-200 flex items-center justify-between group/item transition-colors"
+                      className="px-2.5 py-2 hover:bg-slate-800 rounded-xl flex items-center justify-between group/item transition-colors"
                     >
-                      <span className="truncate pr-2 font-medium">{p.name}</span>
-                      <span className="text-[10px] font-mono text-emerald-400 bg-emerald-950/60 px-1.5 py-0.5 rounded border border-emerald-500/30">
-                        /p/{p.slug.slice(0, 8)}...
-                      </span>
-                    </button>
+                      <button
+                        onClick={() => onSelectPublicPage(p.slug)}
+                        className="text-left truncate pr-2 text-xs text-slate-200 hover:text-emerald-400 font-medium cursor-pointer"
+                      >
+                        <div className="truncate font-semibold">{p.name}</div>
+                        <div className="text-[10px] font-mono text-slate-400">/p/{p.slug}</div>
+                      </button>
+                      <button
+                        onClick={onOpenPagesDrawer}
+                        className="text-[10px] font-bold px-2 py-1 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white border border-slate-700 shrink-0 cursor-pointer"
+                        title="Abrir painel para editar ou excluir"
+                      >
+                        Gerenciar
+                      </button>
+                    </div>
                   ))}
+                </div>
+                <div className="pt-2 mt-1 border-t border-slate-800/80">
+                  <button
+                    onClick={onOpenPagesDrawer}
+                    className="w-full py-1.5 rounded-lg bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 text-xs font-bold text-center transition-colors cursor-pointer"
+                  >
+                    Abrir Painel (Editar / Remover)
+                  </button>
                 </div>
               </div>
             </div>
