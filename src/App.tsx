@@ -21,6 +21,7 @@ export default function App() {
   // Navigation State
   const [currentTab, setCurrentTab] = useState<string>('dashboard');
   const [publicPageSlug, setPublicPageSlug] = useState<string | null>(null);
+  const [isAdminPreview, setIsAdminPreview] = useState<boolean>(false);
   const [editingPage, setEditingPage] = useState<LandingPageConfig | null>(null);
 
   // Data State
@@ -70,6 +71,7 @@ export default function App() {
 
     if (slugParam) {
       setPublicPageSlug(slugParam);
+      setIsAdminPreview(false);
     }
 
     if (orderParam) {
@@ -98,8 +100,9 @@ export default function App() {
     setIsCheckoutOpen(true);
   };
 
-  const handleSelectPublicPage = (slug: string) => {
+  const handleSelectPublicPage = (slug: string, fromAdmin: boolean = true) => {
     setPublicPageSlug(slug);
+    setIsAdminPreview(fromAdmin);
     // Record page visit
     const prod = products.find((p) => p.slug === slug);
     if (prod) {
@@ -135,7 +138,12 @@ export default function App() {
             page={activePage}
             product={activeProduct}
             onOpenCheckout={(prod) => handleOpenCheckout(prod)}
-            onBackToAdmin={() => setPublicPageSlug(null)}
+            onBackToAdmin={() => {
+              setPublicPageSlug(null);
+              setIsAdminPreview(false);
+              window.history.replaceState({}, '', window.location.pathname);
+            }}
+            showAdminBar={isAdminPreview}
           />
 
           {isCheckoutOpen && selectedCheckoutProduct && (

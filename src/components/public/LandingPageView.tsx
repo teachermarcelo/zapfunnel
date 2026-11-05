@@ -21,7 +21,8 @@ interface LandingPageViewProps {
   page: LandingPageConfig;
   product: Product;
   onOpenCheckout: (product: Product) => void;
-  onBackToAdmin: () => void;
+  onBackToAdmin?: () => void;
+  showAdminBar?: boolean;
 }
 
 export const LandingPageView: React.FC<LandingPageViewProps> = ({
@@ -29,6 +30,7 @@ export const LandingPageView: React.FC<LandingPageViewProps> = ({
   product,
   onOpenCheckout,
   onBackToAdmin,
+  showAdminBar = false,
 }) => {
   const [openFaqId, setOpenFaqId] = useState<string | null>(page.faqs[0]?.id || null);
   const [timeLeft, setTimeLeft] = useState(page.countdownMinutes * 60);
@@ -113,28 +115,24 @@ export const LandingPageView: React.FC<LandingPageViewProps> = ({
 
   return (
     <div className="min-h-screen bg-slate-950 text-slate-100 font-sans selection:bg-emerald-500 selection:text-slate-950 pb-20">
-      {/* Top Floating Admin Return Bar */}
-      <div className="bg-slate-900/90 backdrop-blur-md border-b border-slate-800 px-4 py-2 flex items-center justify-between text-xs sticky top-0 z-40">
-        <button
-          onClick={onBackToAdmin}
-          className="flex items-center space-x-1.5 text-slate-300 hover:text-white transition-colors cursor-pointer"
-        >
-          <ArrowLeft className="w-4 h-4 text-emerald-400" />
-          <span className="font-semibold">Voltar ao Painel Administrativo</span>
-        </button>
-
-        <div className="flex items-center space-x-2">
-          <span className="hidden sm:inline text-slate-400 font-mono text-[11px]">
-            URL da Campanha: /p/{page.slug}
-          </span>
+      {/* Top Floating Admin Return Bar - ONLY shown when previewing from admin dashboard */}
+      {showAdminBar && (
+        <div className="bg-slate-900/95 backdrop-blur-md border-b border-emerald-500/30 px-4 py-2 flex items-center justify-between text-xs sticky top-0 z-40">
           <button
-            onClick={() => onOpenCheckout(product)}
-            className="px-3 py-1 rounded-lg bg-emerald-500 text-slate-950 font-bold text-xs hover:bg-emerald-400 transition-colors cursor-pointer"
+            onClick={onBackToAdmin}
+            className="flex items-center space-x-1.5 text-slate-300 hover:text-white transition-colors cursor-pointer"
           >
-            Abrir Checkout Próprio
+            <ArrowLeft className="w-4 h-4 text-emerald-400" />
+            <span className="font-semibold">Voltar ao Painel Administrativo</span>
           </button>
+
+          <div className="flex items-center space-x-2">
+            <span className="hidden sm:inline text-slate-400 font-mono text-[11px]">
+              Modo Preview Admin • /p/{page.slug}
+            </span>
+          </div>
         </div>
-      </div>
+      )}
 
       {/* Urgency Countdown Ribbon */}
       <div className="bg-gradient-to-r from-red-600 via-orange-600 to-rose-600 text-white py-2 px-4 text-center text-xs font-bold tracking-wide shadow-md flex items-center justify-center space-x-2">
