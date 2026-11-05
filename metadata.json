@@ -1,0 +1,6 @@
+{
+  "name": "ZapFunnel Pro - Landing Pages & Checkout WhatsApp",
+  "description": "Plataforma multiconversão de páginas de vendas personalizadas com checkout próprio, Pix dinâmico, notificações no WhatsApp e recuperação de carrinho.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
